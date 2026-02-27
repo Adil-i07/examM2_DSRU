@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/examM2_DSRU/">
     <title>Grade 2 Exam Schedule System - Smart Edition with Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -557,16 +558,18 @@ exp: "ผู้สูงอายุจะมีเลนส์ตาที่�
     "ทักษะคณิตศาสตร์ 4": Array(1).fill({ q: "เป็นแบบอัตนัย 2 ข้อ", options: ["เข้าใจ", "", "", ""], correct: 0, exp: "ตอบเข้าใจ (ทักษะคณิตศาสตร์ 4)" })
 };
 
-// 1. ระบบจำตำแหน่งและโหลดหน้าเดิม
+// 1. ระบบจำตำแหน่งและโหลดหน้าเดิม (แก้ไขเพิ่ม Error Handling สำหรับ GitHub Pages)
 window.onload = function() {
-    const lastPos = localStorage.getItem('scrollPos');
-    const lastSubject = localStorage.getItem('openSubject');
-    if (lastSubject) {
-        const data = JSON.parse(lastSubject);
-        openFull(data.name, data.code, data.time, data.content, data.p, data.a, true);
-    } else if (lastPos) {
-        window.scrollTo(0, lastPos);
-    }
+    try {
+        const lastPos = localStorage.getItem('scrollPos');
+        const lastSubject = localStorage.getItem('openSubject');
+        if (lastSubject) {
+            const data = JSON.parse(lastSubject);
+            openFull(data.name, data.code, data.time, data.content, data.p, data.a, true);
+        } else if (lastPos) {
+            window.scrollTo(0, parseInt(lastPos));
+        }
+    } catch (e) { console.log("Local Storage reset"); }
     updateCountdowns();
 };
 
@@ -601,7 +604,7 @@ function closeFull() {
     document.getElementById('detail-view').style.display = 'none';
     localStorage.removeItem('openSubject');
     const lastPos = localStorage.getItem('scrollPos');
-    window.scrollTo(0, lastPos || 0);
+    window.scrollTo(0, parseInt(lastPos) || 0);
 }
 
 // 3. ระบบ Quiz Logic
@@ -654,8 +657,10 @@ function updateCountdowns() {
         return days > 0 ? days : "สอบแล้ว";
     }
 
-    document.getElementById('days-mon').innerText = getDays(target1);
-    document.getElementById('days-thu').innerText = getDays(target2);
+    const monEl = document.getElementById('days-mon');
+    const thuEl = document.getElementById('days-thu');
+    if(monEl) monEl.innerText = getDays(target1);
+    if(thuEl) thuEl.innerText = getDays(target2);
 }
 </script>
 
